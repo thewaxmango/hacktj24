@@ -5,7 +5,7 @@ class AgentGraph {
     
     constructor (type_list, adj_list, trust_list = null) {
         this.nodes = [];
-        this.MAX_TURN_DEPTH = 100;
+        this.MAX_TURN_DEPTH = 1;
 
         for (let i = 0; i < adj_list.length; i++) {
             this.nodes.push(new AgentNode(this, type_list[i]))
@@ -143,7 +143,7 @@ class AgentNode {
     }
 
     init_round_root() {
-        if (Math.random() < this.#internal_belief) {
+        if (Math.random() - 0.5 < this.#internal_belief) {
             this.#internal_belief = AgentNode.BELIEF_A;
         } else {
             this.#internal_belief = AgentNode.BELIEF_B;
@@ -219,7 +219,7 @@ system.nodes[6].update_external_belief();
 
 
 console.log(system.nodes);
-for (let i = 0; i < 50; i++) {
+for (let i = 0; i < 1; i++) {
     //system.print_belief();
     system.do_round();
 }
