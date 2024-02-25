@@ -47,7 +47,7 @@ class AgentGraph {
     do_turns() {
         //* do turns
         for (let turn = 0; turn < this.MAX_TURN_DEPTH; turn++) {
-            console.log(turn + " ------------")
+            //console.log(turn + " ------------")
             for (let i = 0; i < this.n_len; i++) {
                 this.nodes[i].do_turn();
             }
@@ -162,7 +162,7 @@ class AgentNode {
         belief_delta = Math.round(belief_delta * 64) / 64;
         this.#internal_belief += belief_delta;
 
-        console.log("\t" + belief_delta + " " + this.#internal_belief + " -- " + this.#conx_trust)
+        //console.log("\t" + belief_delta + " " + this.#internal_belief + " -- " + this.#conx_trust)
                 
         if (this.#internal_belief < AgentNode.BELIEF_A) {
             this.#internal_belief = AgentNode.BELIEF_A;
