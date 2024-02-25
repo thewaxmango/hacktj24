@@ -2,7 +2,32 @@ class AgentGraph {
     MAX_TURN_DEPTH;
     n_len;
     nodes;
+
+    constructor () {
+
+    }
     
+    init_2 (type_list, adj_list, trust_list = null) {
+        this.nodes = [];
+        this.MAX_TURN_DEPTH = 100;
+
+        for (let i = 0; i < adj_list.length; i++) {
+            this.nodes.push(new AgentNode(this, type_list[i]))
+        }
+        this.n_len = this.nodes.length;
+
+        for (let i = 0; i < adj_list.length; i++) {
+            for (let j = 0; j < adj_list[i].length; j++) {
+                let idx = adj_list[i][j]
+                if (trust_list != null) {
+                    this.nodes[i].add_conx(idx, this.nodes[idx], trust_list[i][j]);
+                } else {
+                    this.nodes[i].add_conx(idx, this.nodes[idx]);
+                }
+            }
+        }
+    }
+
     init_1 (all_actors, edge_pairs) {
         this.n_len = all_actors.length;
         let type_list = [];
@@ -25,27 +50,6 @@ class AgentGraph {
         }
         
         this.init_2(type_list, adj_list);
-    }
-
-    init_2 (type_list, adj_list, trust_list = null) {
-        this.nodes = [];
-        this.MAX_TURN_DEPTH = 100;
-
-        for (let i = 0; i < adj_list.length; i++) {
-            this.nodes.push(new AgentNode(this, type_list[i]))
-        }
-        this.n_len = this.nodes.length;
-
-        for (let i = 0; i < adj_list.length; i++) {
-            for (let j = 0; j < adj_list[i].length; j++) {
-                let idx = adj_list[i][j]
-                if (trust_list != null) {
-                    this.nodes[i].add_conx(idx, this.nodes[idx], trust_list[i][j]);
-                } else {
-                    this.nodes[i].add_conx(idx, this.nodes[idx]);
-                }
-            }
-        }
     }
 
     static rand_int(n) {
@@ -284,7 +288,8 @@ type_list = [AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TEL
     AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER, AgentNode.PROPAGANDIST];
 adj_list = [[1, 2, 3, 4, 5, 6], [0, 2, 3, 4, 5, 7], [0, 1, 3, 4, 5, 7, 8], [0, 1, 2, 4, 5], [0, 1, 2, 3, 5], [0, 1, 2, 3, 4], [0, 7, 8, 9, 10], [1, 2, 6, 8, 9, 10], [2, 6, 7, 9, 10], [6, 7, 8, 10], [6, 7, 8, 9]];
 
-system = new AgentGraph(type_list, adj_list);
+system = new AgentGraph();
+system.init_2(type_list, adj_list);
 system.nodes[5].propaganda_belief = AgentNode.BELIEF_B;
 system.nodes[5].update_external_belief();
 system.nodes[10].propaganda_belief = AgentNode.BELIEF_A;
