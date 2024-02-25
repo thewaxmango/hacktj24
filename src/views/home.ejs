@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <script src="https://unpkg.com/konva@9.3.3/konva.min.js"></script>
+        <meta charset="utf-8" />
+        <title>Konva Drag and Drop a Group Demo</title>
+        <style>
+                body {
+                        margin: 0;
+                        padding: 0;
+                        overflow: hidden;
+                        background-color: #f0f0f0;
+                }
+        </style>
+</head>
+
+<body>
+        <div id="container"></div>
+        <script>
+                var width = window.innerWidth;
+                var height = window.innerHeight;
+
+                var stage = new Konva.Stage({
+                        container: 'container',
+                        width: width,
+                        height: height,
+                });
+
+                var layer = new Konva.Layer();
+
+                let balls = []
+                for (let i = 0; i < 2; i++) {
+                        let group = new Konva.Group({
+                                draggable: true,
+                        });
+                        var box = new Konva.Rect({
+                                x: i * 30 + 10,
+                                y: i * 18 + 40,
+                                width: 50,
+                                height: 50,
+                                name: 'target',
+                                fill: 'red',
+                                stroke: 'black',
+                                strokeWidth: 4,
+                        });
+                        group.add(box);
+                        group.on('mouseover', function() {
+                                document.body.style.cursor = 'pointer';
+                        });
+                        group.on('mouseout', function() {
+                                document.body.style.cursor = 'default';
+                        });
+                        balls.push(group)
+                }
+
+
+
+
+                for (let i = 0; i < balls.length; i++) {
+                        layer.add(balls[i]);
+                        console.log(balls[i]);
+                }
+
+
+                let drawingLine = false;
+                let line;
+                for(let i  = 0; i< balls.length; i++){
+                        balls[i].on('mousedown', (e) => {
+                          if (e.evt.button === 2) {
+                                drawingLine = true;
+                                const pos = stage.getPointerPosition();
+                                line = new Konva.Line({
+                                        stroke: 'black',
+                                        // remove line from hit graph, so we can check intersections
+                                        listening: false,
+                                        points: [balls[i].x()+50, balls[i].y()+50, pos.x, pos.y]
+                                });
+                                console.log(balls[i].x()+" "+balls[i].y());
+                                balls[i].add(line);
+                          }
+                        });
+                }
+
+                stage.on('mouseover', (e) => {
+                        if (e.target.hasName('target')) {
+                                e.target.stroke('black');
+                                layer.draw();
+                        }
+                });
+
+                stage.on('mouseout', (e) => {
+                        if (e.target.hasName('target')) {
+                                e.target.stroke(null);
+                                layer.draw();
+                        }
+                });
+
+                stage.on('mousemove', (e) => {
+                        if (!line) {
+                                return;
+                        }
+                        const pos = stage.getPointerPosition();
+                        const points = line.points().slice();
+                        points[2] = pos.x;
+                        points[3] = pos.y;
+                        line.points(points);
+                        layer.batchDraw();
+                });
+
+                stage.on('mouseup', (e) => {
+                        if (!line) {
+                                return;
+                        }
+                        if (!e.target.hasName('target')) {
+                                line.destroy();
+                                layer.draw();
+                                line = null;
+                        } else {
+                                line = null;
+                        }
+
+                });
+                stage.add(layer);
+document.addEventListener('contextmenu', event => {
+    event.preventDefault();
+});
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://unpkg.com/konva@9.3.3/konva.min.js"></script>
+    <meta charset="utf-8" />
+    <title>Konva Drop DOM element Demo</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #f0f0f0;
+      }
+
+      #container {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      p {
+        margin: 4px;
+      }
+
+      #drag-items img {
+        height: 100px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <p>Drag and drop actors into the world!</p>
+    <div id="drag-items">
+      <img src="/assets/truth.png" draggable="true"/>
+      
+	  <img src="/assets/capper.png" draggable="true" />
+	  <img src="/assets/balder.png" draggable="true" />
+	  <img src="/assets/propagandist.png" draggable="true" />
+      <pre>Truth-teller    Capper       Yapper    Propagandist</pre>
+      <figcaption></figcaption>
+    </div>
+
+    <div id="container"></div>
+    <script src="script.js"></script>
+
+  </body>
+</html>
