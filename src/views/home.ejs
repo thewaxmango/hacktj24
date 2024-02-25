@@ -28,7 +28,7 @@
       var shapesLayer = new Konva.Layer();
       
 	  let balls = []
-	  for (let i=0; i<1; i++) {
+	  for (let i=0; i<10; i++) {
 		let group = new Konva.Group({
 			draggable: true,
 		});
@@ -43,16 +43,17 @@
           strokeWidth: 4,
         });
         group.add(box);
+		group.on('mouseover', function () {
+			document.body.style.cursor = 'pointer';
+		});
+		group.on('mouseout', function () {
+			document.body.style.cursor = 'default';
+		});
 		balls.push(group)
 	  }
 	 
 
-      group.on('mouseover', function () {
-        document.body.style.cursor = 'pointer';
-      });
-      group.on('mouseout', function () {
-        document.body.style.cursor = 'default';
-      });
+      
 
 	  for (let i=0; i<balls.length; i++) {
 		shapesLayer.add(balls[i]);
