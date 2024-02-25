@@ -3,6 +3,10 @@ class AgentGraph {
     n_len;
     nodes;
     
+    constructor (all_actors) {
+        
+    }
+
     constructor (type_list, adj_list, trust_list = null) {
         this.nodes = [];
         this.MAX_TURN_DEPTH = 100;
@@ -88,6 +92,23 @@ class AgentGraph {
         }
         return updates;
     }
+
+    gen_trust_matr() {
+        let trust_matr = []
+        for (let i = 0; i < this.n_len; i++) {
+            trust_matr.push([]);
+            for (let _ = 0; _ < this.n_len; _++) {
+                trust_matr[i].push(0);
+            }
+
+            let idxs = this.nodes[i].conxs_idx;
+            let trusts = this.nodes[i].conx_trust;
+            for (let j = 0; j < idxs.length; j++) {
+                trust_matr[i][idxs[j]] = trusts[j];
+            }
+        }
+        return trust_matr;
+    }
 }
 
 class AgentNode {
@@ -117,7 +138,7 @@ class AgentNode {
 
     conxs_idx = [];
     #conx_nodes = [];
-    #conx_trust = [];
+    conx_trust = [];
 
     #graph;
 
@@ -133,7 +154,7 @@ class AgentNode {
 
     add_conx(node_idx, node, trust = 0.5) {
         this.conxs_idx.push(node_idx);
-        this.#conx_trust.push(trust);
+        this.conx_trust.push(trust);
         this.#conx_nodes.push(node);
     }
 
@@ -177,7 +198,7 @@ class AgentNode {
         //* update internal belief
         let belief_delta = 0;
         for (let i = 0; i < this.conxs_idx.length; i++) {
-            belief_delta += (this.#conx_nodes[i].external_belief - this.#internal_belief) * this.#conx_trust[i];
+            belief_delta += (this.#conx_nodes[i].external_belief - this.#internal_belief) * this.conx_trust[i];
         }
         belief_delta *= AgentNode.BELIEF_CHANGE_RATE;
         belief_delta = Math.round(belief_delta * 64) / 64;
@@ -188,7 +209,7 @@ class AgentNode {
             this.#internal_belief += belief_delta;
         }
             
-        //console.log("\t" + belief_delta + " " + this.#internal_belief + " -- " + this.#conx_trust)
+        //console.log("\t" + belief_delta + " " + this.#internal_belief + " -- " + this.conx_trust)
                 
         if (this.#internal_belief < AgentNode.BELIEF_A) {
             this.#internal_belief = AgentNode.BELIEF_A;
@@ -199,7 +220,7 @@ class AgentNode {
 
     update_trust() {
         for (let i = 0; i < this.conxs_idx.length; i++) {
-            if (this.#conx_trust[i] <= 0) {
+            if (this.conx_trust[i] <= 0) {
                 continue;
             }
 
@@ -212,15 +233,15 @@ class AgentNode {
             let diff_view = Math.min(this.#internal_belief, node_belief) < AgentNode.BELIEF_AVG && Math.max(this.#internal_belief, node_belief) > AgentNode.BELIEF_AVG;
             let belief_diff = Math.abs(this.#internal_belief - node_belief)
             if (!diff_view) {
-                this.#conx_trust[i] += AgentNode.TRUST_INCREASE_RATE * (1 - belief_diff);
+                this.conx_trust[i] += AgentNode.TRUST_INCREASE_RATE * (1 - belief_diff);
             } else {
-                this.#conx_trust[i] -= AgentNode.TRUST_DECREASE_RATE * belief_diff;
+                this.conx_trust[i] -= AgentNode.TRUST_DECREASE_RATE * belief_diff;
             }
 
-            if (this.#conx_trust[i] > 1) {
-                this.#conx_trust[i] = 1;
-            } else if (this.#conx_trust[i] < 0) {
-                this.#conx_trust[i] = 0;
+            if (this.conx_trust[i] > 1) {
+                this.conx_trust[i] = 1;
+            } else if (this.conx_trust[i] < 0) {
+                this.conx_trust[i] = 0;
             }
         }
     }
@@ -229,7 +250,7 @@ class AgentNode {
         //console.log("type:  " + this.#agent_type);
         console.log("belie: " + this.#internal_belief + " " + this.external_belief);
         //console.log("conxs: " + this.conxs_idx);
-        console.log("trust: " + this.#conx_trust)
+        console.log("trust: " + this.conx_trust)
     }
 
     get_external() {
@@ -255,3 +276,4 @@ for (let i = 0; i < 10; i++) {
     system.do_round();
 }
 system.print_debug();
+console.log(system.gen_trust_matr())
