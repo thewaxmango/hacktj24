@@ -19,6 +19,7 @@ document
 .getElementById('drag-items')
 .addEventListener('dragstart', function (e) {
     itemURL = e.target.src;
+    console.log(itemURL)
 });
 
 var con = stage.container();

@@ -5,7 +5,7 @@ class AgentGraph {
     
     constructor (type_list, adj_list, trust_list = null) {
         this.nodes = [];
-        this.MAX_TURN_DEPTH = 20;
+        this.MAX_TURN_DEPTH = 100;
 
         for (let i = 0; i < adj_list.length; i++) {
             this.nodes.push(new AgentNode(this, type_list[i]))
@@ -22,8 +22,6 @@ class AgentGraph {
                 }
             }
         }
-
-        //AgentGraph.MAX_TURN_DEPTH = 2 * this.n_len;
     }
 
     static rand_int(n) {
@@ -75,6 +73,21 @@ class AgentGraph {
             console.log(this.nodes[i].get_external());
         }
     }
+
+    get_update(idx) {
+        return {
+            ID: idx, 
+            external: this.nodes[idx].get_external(), 
+            edges: this.nodes[idx].conxs_idx};
+    }
+
+    get_all_updates() {
+        let updates = [];
+        for (let i = 0; i < this.n_len; i++) {
+            updates.push(this.get_update(i));
+        }
+        return updates;
+    }
 }
 
 class AgentNode {
@@ -87,9 +100,11 @@ class AgentNode {
     static BELIEF_AVG = 0;
     static BELIEF_B = 0.5;
 
-    static BELIEF_CHANGE_RATE = 1 / 16;
-    static TRUST_INCREASE_RATE = 1 / 32;
-    static TRUST_DECREASE_RATE = 1 / 32;
+    static BELIEF_CHANGE_RATE = 1 / 8;
+    static TRUST_INCREASE_RATE = 1 / 16;
+    static TRUST_DECREASE_RATE = 1 / 16;
+
+    static MISTAKE_RATE = 0;
 
     #agent_type;
     #internal_belief;
@@ -98,7 +113,9 @@ class AgentNode {
     propaganda_belief;
     #bullshit_belief;
 
-    #conxs_idx = [];
+    CONTRARIAN_CONST = 0.5;
+
+    conxs_idx = [];
     #conx_nodes = [];
     #conx_trust = [];
 
@@ -115,7 +132,7 @@ class AgentNode {
     }
 
     add_conx(node_idx, node, trust = 0.5) {
-        this.#conxs_idx.push(node_idx);
+        this.conxs_idx.push(node_idx);
         this.#conx_trust.push(trust);
         this.#conx_nodes.push(node);
     }
@@ -134,6 +151,10 @@ class AgentNode {
             case AgentNode.PROPAGANDIST:
                 this.external_belief = this.propaganda_belief;
                 break;
+        }
+
+        if (Math.random() < AgentNode.MISTAKE_RATE) {
+            this.external_belief = Math.round((Math.random() - 0.5) * 64) / 64;
         }
     }
 
@@ -155,13 +176,18 @@ class AgentNode {
     do_turn() {
         //* update internal belief
         let belief_delta = 0;
-        for (let i = 0; i < this.#conxs_idx.length; i++) {
+        for (let i = 0; i < this.conxs_idx.length; i++) {
             belief_delta += (this.#conx_nodes[i].external_belief - this.#internal_belief) * this.#conx_trust[i];
         }
         belief_delta *= AgentNode.BELIEF_CHANGE_RATE;
         belief_delta = Math.round(belief_delta * 64) / 64;
-        this.#internal_belief += belief_delta;
 
+        if (this.#agent_type != AgentNode.CONTRARIAN || Math.abs(this.#internal_belief) < this.CONTRARIAN_CONST) {
+            this.#internal_belief += belief_delta;
+        } else if (belief_delta * this.#internal_belief > 0) {
+            this.#internal_belief += belief_delta;
+        }
+            
         //console.log("\t" + belief_delta + " " + this.#internal_belief + " -- " + this.#conx_trust)
                 
         if (this.#internal_belief < AgentNode.BELIEF_A) {
@@ -172,7 +198,7 @@ class AgentNode {
     }
 
     update_trust() {
-        for (let i = 0; i < this.#conxs_idx.length; i++) {
+        for (let i = 0; i < this.conxs_idx.length; i++) {
             if (this.#conx_trust[i] <= 0) {
                 continue;
             }
@@ -202,7 +228,7 @@ class AgentNode {
     print_debug() {
         //console.log("type:  " + this.#agent_type);
         console.log("belie: " + this.#internal_belief + " " + this.external_belief);
-        //console.log("conxs: " + this.#conxs_idx);
+        //console.log("conxs: " + this.conxs_idx);
         console.log("trust: " + this.#conx_trust)
     }
 
@@ -211,15 +237,16 @@ class AgentNode {
     }
 }
 
-type_list = [AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER,
-            AgentNode.PROPAGANDIST, AgentNode.PROPAGANDIST];
-adj_list = [[], [2, 3, 4, 5], [1, 3, 4], [1, 2, 4], [1, 2, 3, 6], [1], [4]];
+type_list = [AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER,
+    AgentNode.TRUTH_TELLER, AgentNode.PROPAGANDIST, AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER, 
+    AgentNode.TRUTH_TELLER, AgentNode.TRUTH_TELLER, AgentNode.PROPAGANDIST];
+adj_list = [[1, 2, 3, 4, 5, 6], [0, 2, 3, 4, 5, 7], [0, 1, 3, 4, 5, 7, 8], [0, 1, 2, 4, 5], [0, 1, 2, 3, 5], [0, 1, 2, 3, 4], [0, 7, 8, 9, 10], [1, 2, 6, 8, 9, 10], [2, 6, 7, 9, 10], [6, 7, 8, 10], [6, 7, 8, 9]];
 
 system = new AgentGraph(type_list, adj_list);
 system.nodes[5].propaganda_belief = AgentNode.BELIEF_B;
 system.nodes[5].update_external_belief();
-system.nodes[6].propaganda_belief = AgentNode.BELIEF_A;
-system.nodes[6].update_external_belief();
+system.nodes[10].propaganda_belief = AgentNode.BELIEF_A;
+system.nodes[10].update_external_belief();
 
 
 console.log(system.nodes);
