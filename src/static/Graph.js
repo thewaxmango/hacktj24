@@ -5,7 +5,7 @@ class AgentGraph {
     
     constructor (type_list, adj_list, trust_list = null) {
         this.nodes = [];
-        this.MAX_TURN_DEPTH = 1;
+        this.MAX_TURN_DEPTH = 20;
 
         for (let i = 0; i < adj_list.length; i++) {
             this.nodes.push(new AgentNode(this, type_list[i]))
@@ -47,6 +47,7 @@ class AgentGraph {
     do_turns() {
         //* do turns
         for (let turn = 0; turn < this.MAX_TURN_DEPTH; turn++) {
+            //console.log(turn + " ------------")
             for (let i = 0; i < this.n_len; i++) {
                 this.nodes[i].do_turn();
             }
@@ -86,9 +87,9 @@ class AgentNode {
     static BELIEF_AVG = 0;
     static BELIEF_B = 0.5;
 
-    static BELIEF_CHANGE_RATE = 0.05;
-    static TRUST_INCREASE_RATE = 0.02;
-    static TRUST_DECREASE_RATE = 0.02;
+    static BELIEF_CHANGE_RATE = 1 / 16;
+    static TRUST_INCREASE_RATE = 1 / 32;
+    static TRUST_DECREASE_RATE = 1 / 32;
 
     #agent_type;
     #internal_belief;
@@ -158,7 +159,10 @@ class AgentNode {
             belief_delta += (this.#conx_nodes[i].external_belief - this.#internal_belief) * this.#conx_trust[i];
         }
         belief_delta *= AgentNode.BELIEF_CHANGE_RATE;
+        belief_delta = Math.round(belief_delta * 64) / 64;
         this.#internal_belief += belief_delta;
+
+        //console.log("\t" + belief_delta + " " + this.#internal_belief + " -- " + this.#conx_trust)
                 
         if (this.#internal_belief < AgentNode.BELIEF_A) {
             this.#internal_belief = AgentNode.BELIEF_A;
@@ -219,7 +223,7 @@ system.nodes[6].update_external_belief();
 
 
 console.log(system.nodes);
-for (let i = 0; i < 1; i++) {
+for (let i = 0; i < 10; i++) {
     //system.print_belief();
     system.do_round();
 }
