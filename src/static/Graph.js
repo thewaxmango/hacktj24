@@ -3,11 +3,31 @@ class AgentGraph {
     n_len;
     nodes;
     
-    constructor (all_actors) {
+    init_1 (all_actors, edge_pairs) {
+        this.n_len = all_actors.length;
+        let type_list = [];
+        let adj_list = [];
+        for (let _ = 0; _ < this.n_len; _++) {
+            type_list.push(0);
+            adj_list.push([]);
+        }
+
+        for (let i = 0; i < this.n_len; i++) {
+            idx = all_actors[i].ID;
+            type_list[idx] = all_actors[i].type;
+        }
+
+        for (let i = 0; i < edge_pairs.length; i++) {
+            let a = edge_pairs[i][0];
+            let b = edge_pairs[i][1];
+
+            adj_list[a].push(b);
+        }
         
+        this.init_2(type_list, adj_list);
     }
 
-    constructor (type_list, adj_list, trust_list = null) {
+    init_2 (type_list, adj_list, trust_list = null) {
         this.nodes = [];
         this.MAX_TURN_DEPTH = 100;
 
@@ -43,7 +63,7 @@ class AgentGraph {
             this.nodes[i].init_round();
         }
         let root_idx = AgentGraph.rand_int(this.n_len);
-        //this.nodes[root_idx].init_round_root();
+        this.nodes[root_idx].init_round_root();
     }
 
     do_turns() {
@@ -186,11 +206,12 @@ class AgentNode {
     }
 
     init_round_root() {
-        if (Math.random() - 0.5 < this.#internal_belief) {
-            this.#internal_belief = AgentNode.BELIEF_A;
-        } else {
-            this.#internal_belief = AgentNode.BELIEF_B;
-        }
+        // if (Math.random() - 0.5 < this.#internal_belief) {
+        //     this.#internal_belief = AgentNode.BELIEF_A;
+        // } else {
+        //     this.#internal_belief = AgentNode.BELIEF_B;
+        // }
+        this.#internal_belief = Math.round(Math.random() * 64) / 64;
         this.update_external_belief();
     }
 

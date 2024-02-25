@@ -56,7 +56,8 @@ function getAllActors() {
         res.add({
             ID: group.ID,
             external: group.external,
-            edges: [] //daniel deals with this
+            edges: [], //daniel deals with this
+            type: 1
         });
     });
     return res;
