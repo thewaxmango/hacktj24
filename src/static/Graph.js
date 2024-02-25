@@ -1,14 +1,14 @@
 class AgentGraph {
-    static MAX_TURN_DEPTH;
-    static nodes;
-    static n_len;
+    MAX_TURN_DEPTH;
+    n_len;
+    nodes;
     
     constructor (type_list, adj_list, trust_list = null) {
         this.nodes = [];
-        AgentGraph.MAX_TURN_DEPTH = 100;
+        this.MAX_TURN_DEPTH = 100;
 
         for (let i = 0; i < adj_list.length; i++) {
-            this.nodes.push(new AgentNode(type_list[i]))
+            this.nodes.push(new AgentNode(this, type_list[i]))
         }
         this.n_len = this.nodes.length;
 
@@ -46,7 +46,7 @@ class AgentGraph {
 
     do_turns() {
         //* do turns
-        for (let turn = 0; turn < AgentGraph.MAX_TURN_DEPTH; turn++) {
+        for (let turn = 0; turn < this.MAX_TURN_DEPTH; turn++) {
             for (let i = 0; i < this.n_len; i++) {
                 this.nodes[i].do_turn();
             }
@@ -99,9 +99,12 @@ class AgentNode {
 
     #conxs_idx = [];
     #conx_nodes = [];
-    #conx_trust = [];   
+    #conx_trust = [];
 
-    constructor(type) {
+    #graph;
+
+    constructor(graph, type) {
+        this.#graph = graph
         this.#agent_type = type;
 
         this.#internal_belief = AgentNode.BELIEF_AVG;
