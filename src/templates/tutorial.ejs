@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>Tutorial</title>
+
+    <style>
+        body {
+            background-image: url('../static/background.png')
+        }
+    </style>
+  </head>
+  <body>
+    <!-- <img src="../static/truth.png"> -->
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold text-body-emphasis">The Evolution of Truth</h1>
+        <div class="col-lg-6 mx-auto">
+          <p class="lead mb-4">
+            Society consists of many different types of people. Some are truth tellers, some are liars, and others are in between. Here, we simulate a society with four types of people: the truth-tellers, the liars, the yappers, and the propagandists. Modeling the interactions between different people can help us predict how information is transferred from person to person and how people's relationships to one another change over time. Click the button below to access the simulation.
+          </p>
+          <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="/" class="btn btn-primary btn-lg px-4 gap-3" role="button">Simulation</a>
+          </div>
+        </div>
+
+        <div class="container px-4 py-5" id="hanging-icons">
+            <div class="row g-4 py-5 row-cols-4">
+              <div class="col d-flex align-items-start">
+                <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                  <svg class="bi" width="1em" height="1em"><use xlink:href="#toggles2"/></svg>
+                </div>
+                <div>
+                  <h3 class="fs-2 text-body-emphasis">Truth-Tellers</h3>
+                  <p>These people always tell the truth. These are the people that everyone likes. Typically, these people will increase the overall trust in a society.</p>
+                </div>
+                <!-- <img src="../static/truth.png"> -->
+              </div>
+              
+              <div class="col d-flex align-items-start">
+                <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                  <svg class="bi" width="1em" height="1em"><use xlink:href="#cpu-fill"/></svg>
+                </div>
+                <div>
+                  <h3 class="fs-2 text-body-emphasis">Liars</h3>
+                  <p>These people always go contrary to the truth; they always lie when communicating with others. Typically, these people reduce the overall trust in a society.</p>
+                </div>
+              </div>
+
+              <div class="col d-flex align-items-start">
+                <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                  <svg class="bi" width="1em" height="1em"><use xlink:href="#tools"/></svg>
+                </div>
+                <div>
+                  <h3 class="fs-2 text-body-emphasis">Yappers</h3>
+                  <p>These people don't know what they're talking about, so they communicate with others randomly; they can either lie or tell the truth.</p>
+                </div>
+              </div>
+
+              <div class="col d-flex align-items-start">
+                <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                  <svg class="bi" width="1em" height="1em"><use xlink:href="#toggles2"/></svg>
+                </div>
+                <div>
+                  <h3 class="fs-2 text-body-emphasis">Propagandists</h3>
+                  <p>These people have a pre-set belief from the very beginning. When communicating with others, these people will always try to spread their viewpoints, regardless of what other people say.</p>
+                </div>
+              </div>
+            </div>
+
+        </div>
+    </div>
+  </body>
+</html>
